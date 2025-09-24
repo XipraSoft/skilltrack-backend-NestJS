@@ -1,0 +1,41 @@
+// Database ko PostgreSQL set karein
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Prisma Client ko generate karna
+generator client {
+  provider = "prisma-client-js"
+}
+
+// --- CORE MODELS ---
+
+// SkillTrack: User Model (Required fields for Auth)
+model User {
+  id           Int        @id @default(autoincrement())
+  email        String     @unique
+  password     String     // Hashed password store hoga
+  name         String?
+  role         String     @default("student") // 'student', 'mentor', 'admin'
+
+  // Relationships
+  ownedWorkspaces Workspace[] @relation("OwnerWorkspaces")
+  // Abhi ke liye bas yahi relationships rakhte hain.
+
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+// SkillTrack: Workspace Model (Week 2 ke liye structure)
+model Workspace {
+  id           Int        @id @default(autoincrement())
+  name         String
+  ownerId      Int        
+  
+  // Relationship: Har workspace ka ek owner hota hai (User)
+  owner        User       @relation("OwnerWorkspaces", fields: [ownerId], references: [id])
+  
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
